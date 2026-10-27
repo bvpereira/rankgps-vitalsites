@@ -47,6 +47,6 @@ npm run build
 
 Os testes usam respostas simuladas: não precisam de chave real e não gastam créditos. Cobrem paginação até 50, duplicatas, filiais, campos ausentes, categorias, URLs, credenciais, erros, cancelamento e consulta de detalhes. A quantidade e a disponibilidade dos dados reais dependem da Serper e dos perfis encontrados.
 
-Vercel: preset **Next.js**, raiz do repositório, Node.js 24.x, build padrão (`npm run build`), sem override de output directory e sem variável obrigatória para Serper. Domínio previsto: https://rankgps.vitalsites.com.br. Deploy é controlado pela integração GitHub/Vercel já configurada pelo usuário.
+Vercel: o arquivo `vercel.json` define preset **Next.js**, instalação `npm ci`, build `npm run build` e detecção padrão do diretório de saída, substituindo configurações antigas de site estático. O `package.json` define Node.js 24.x. Não há variável obrigatória para Serper. A raiz do projeto deve ser a raiz do repositório. Domínio previsto: https://rankgps.vitalsites.com.br. Deploy é controlado pela integração GitHub/Vercel já configurada pelo usuário.
 
 Fluxo de trabalho: validar as alterações e fazer commit e push automaticamente para `origin`. Não iniciar servidor local para apresentar mudanças; o usuário acompanha pela Vercel. A versão anterior foi preservada no histórico Git. `docs/search-comparison.md` é um registro histórico de testes da antiga versão de ranking.
