@@ -1,7 +1,13 @@
 export const RESULT_LIMIT = 50;
 export const PAGE_LIMIT = 10;
 
-export type PublicValue = string | number | boolean | null | PublicValue[] | { [key: string]: PublicValue };
+export type PublicValue =
+  | string
+  | number
+  | boolean
+  | null
+  | PublicValue[]
+  | { [key: string]: PublicValue };
 
 export interface Business {
   id: string;

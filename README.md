@@ -1,71 +1,52 @@
-# RankGPS · Vital Sites
+# RankGPS · Explorar empresas
 
-Aplicação pessoal para consultar o ranking local a partir de exatamente cinco pontos escolhidos manualmente. Domínio previsto: https://rankgps.vitalsites.com.br.
+Aplicação pessoal para pesquisar empresas no Google Maps via Serper, reunir até 50 resultados únicos e consultar os dados públicos retornados pelo provedor. Substitui a versão de ranking por cinco pontos.
 
-## Etapa atual
+## Uso
 
-Interface integrada à Serper Maps. Cada clique em **Pesquisar** faz cinco chamadas (uma por ponto) e pode consumir créditos da chave informada. Sem paginação ou tentativas automáticas. Não há dados simulados na aplicação.
+1. Informe sua API Key Serper.dev. A opção de lembrar salva apenas a chave no `localStorage` deste navegador; é possível apagá-la ou trocá-la na interface. Nenhuma chave é fixa no código ou exigida nas variáveis da Vercel.
+2. Digite atividade e localidade, por exemplo `advogado em Rio das Ostras`.
+3. A busca percorre as páginas sequencialmente, mostra os resultados conforme chegam e encerra ao atingir 50 empresas únicas, receber uma página vazia, receber apenas duplicatas, ficar sem a área de paginação ou alcançar dez páginas.
+4. Cada ficha mostra nome, categorias, endereço, telefone, site, nota e quantidade de avaliações. A expansão mostra descrição, coordenadas, identificadores Google e os demais campos públicos recebidos.
+5. “Consultar detalhes adicionais” faz uma chamada extra pelo Place ID ou CID da empresa. Pode retornar os mesmos dados. Cada busca e consulta individual consome créditos da Serper.
 
-- Termo, estabelecimento e chave Serper editáveis.
-- Chave oculta por padrão. Armazenamento em `localStorage` somente com a opção explícita “Lembrar neste navegador”. Desmarcar remove a cópia salva e mantém o campo; apagar limpa ambos. Esse armazenamento não é criptografado nem tem expiração automática.
-- Mapa Leaflet/OpenStreetMap, cinco marcadores numerados, coordenadas, remoção individual e limpeza total. Pontos duplicados são recusados; ao remover, a numeração é reorganizada.
-- Busca de cidades brasileiras por botão ou Enter, via `/api/cities` e Open-Meteo/GeoNames. Aceita UF como em `Rio das Ostras - RJ`. Escolher uma cidade só reposiciona o mapa, preservando os pontos.
-- Para teclado: foque o mapa, use as setas para navegar e o botão “Adicionar ponto no centro”. Também é possível clicar/tocar diretamente no mapa.
-- Não há login, banco, histórico, grid ou relatórios. `noindex` evita solicitar indexação, mas não restringe acesso à página.
+As empresas permanecem apenas na memória da página. Não há login, banco, histórico, grid ou exportação. A busca pode ser interrompida, preservando páginas já recebidas. Falhas posteriores também preservam resultados parciais. Repetir uma busca faz novas consultas.
 
-## Execução
+## Dados e limites
 
-Node.js 24 LTS e npm. O lockfile fixa as versões instaladas.
+- API: `POST https://google.serper.dev/maps`. Busca: `q`, `hl: pt-br`, `page`; a primeira chamada deixa o centro a cargo do provedor. As páginas seguintes usam o `ll` retornado pela Serper. Não se inventa uma área geográfica nem se acrescenta zoom manual.
+- A numeração é a ordem de chegada, após remover duplicatas; página e posição original retornada também estão disponíveis. A ordem pode diferir da Busca Google e de uma sessão pessoal.
+- Categoria primária: campo `type` (ou `category`) retornado. Secundárias: entradas adicionais de `types`, excluindo a principal. Não se infere a principal a partir da primeira entrada de uma lista. Isso não certifica acesso à configuração completa do Perfil da Empresa.
+- Ausências são mostradas como “Não informado pela API”, sem fabricar site, telefone, categoria ou avaliação. A API pode não fornecer horários, fotos, serviços, atributos ou todas as categorias. A seção de campos mostra o que efetivamente veio, com limites de tamanho e remoção de credenciais.
+- Deduplicação por Place ID e CID; fallback por nome, endereço e coordenadas. Filiais com identificadores distintos permanecem separadas. Máximo de dez chamadas por busca, além de consultas individuais explícitas. O saldo/crédito é informado pelo próprio provedor; falhas podem consumir créditos sem retornar esse valor.
+- A consulta individual só aceita uma ficha com o identificador solicitado. Dados de outra empresa nunca substituem silenciosamente o resultado.
+- Referências oficiais: [Serper](https://serper.dev/) e [Playground](https://serper.dev/playground).
+
+## Arquitetura
+
+- Next.js 16 App Router, React 19 e TypeScript.
+- `src/components/BusinessWorkspace.tsx`: busca, chave, progresso e resultados.
+- `src/components/BusinessCard.tsx`: ficha e consulta de detalhes.
+- `src/lib/search.ts`: coleta paginada até 50 resultados, cancelamento e paradas.
+- `src/lib/businesses.ts`: validação, cliente Serper, normalização e deduplicação.
+- `src/app/api/businesses/route.ts`: uma página por requisição.
+- `src/app/api/businesses/details/route.ts`: busca pelo identificador da empresa.
+- `src/hooks/useApiKey.ts`: armazenamento opcional, compatível com a chave da versão anterior.
+
+Frontend → rota da aplicação → Serper. A chave vai no corpo POST da aplicação e no header `X-API-KEY` da Serper, sem persistência no servidor. Não há logs de corpo, chave ou erros brutos do provedor. Respostas e consultas usam `no-store`. As rotas validam origem, tamanho e formato da entrada. Cada chamada tem timeout de 22 segundos, com limite de rota de 30 segundos. Cada página usa uma requisição própria para não depender de uma função longa na Vercel.
+
+## Validação e deploy
 
 ```sh
 npm ci
-npm run dev
-```
-
-Acesse http://localhost:3000. Para verificar e executar a versão de produção:
-
-```sh
 npm run lint
 npm test
 npm run typecheck
 npm run build
-npm start
 ```
 
-## Estrutura
+Os testes usam respostas simuladas: não precisam de chave real e não gastam créditos. Cobrem paginação até 50, duplicatas, filiais, campos ausentes, categorias, URLs, credenciais, erros, cancelamento e consulta de detalhes. A quantidade e a disponibilidade dos dados reais dependem da Serper e dos perfis encontrados.
 
-- `src/app`: página, layout, CSS e rotas de cidades e ranking.
-- `src/components`: interface, busca de cidade, mapa e lista de pontos.
-- `src/hooks/useApiKey.ts`: armazenamento opcional da chave.
-- `src/types/ranking.ts`: tipos e limite de pontos compartilhados.
-- `src/lib/ranking.ts`: validação, cliente Serper e identificação do estabelecimento.
-- `tests/ranking.test.ts`: testes com `fetch` simulado, sem chamadas reais ou créditos.
+Vercel: preset **Next.js**, raiz do repositório, Node.js 24.x, build padrão (`npm run build`), sem override de output directory e sem variável obrigatória para Serper. Domínio previsto: https://rankgps.vitalsites.com.br. Deploy é controlado pela integração GitHub/Vercel já configurada pelo usuário.
 
-O mapa é carregado apenas no navegador. Ao pesquisar, a chave é enviada no corpo JSON de `POST /api/ranking` e usada no header `X-API-KEY` da chamada server-side à Serper. Não há chave fixa, variável de ambiente obrigatória, armazenamento no servidor ou logs de credenciais. Respostas e chamadas de ranking usam `no-store`. A chave não participa da busca de cidades e não é devolvida ao frontend pelo servidor.
-
-## Consulta e interpretação
-
-- Endpoint oficial: `POST https://google.serper.dev/maps`, com `q`, `hl: pt-br`, `ll: @latitude,longitude` e `page: 1`. Referência: https://serper.dev/playground.
-- A cidade apenas centraliza o mapa. Cada consulta usa a coordenada selecionada, sem enviar zoom à Serper. A abrangência fica a cargo do provedor; isso não garante ausência de limites internos nem simula o GPS do usuário. Não há filtro de distância no aplicativo. O zoom visual é independente. A posição é a informada pela Serper, sem reordenar pela distância.
-- Para comparar buscas, usar exatamente o mesmo termo (incluindo a cidade, se ela fizer parte da consulta original). Cada cartão inclui um link para abrir o Maps com esse termo e centro; ele não altera a localização do navegador. Resultados locais da Busca Google, Maps e uma sessão pessoal podem diferir. Não há garantia de reproduzir o ranking visto na conta do usuário.
-- Identificação pelo nome completo normalizado: ignora acentos, maiúsculas, pontuação e espaços repetidos. Não faz correspondência aproximada nem assume que um nome parcialmente semelhante seja o estabelecimento.
-- Uma correspondência: mostra posição, nome e endereço. Mais de uma: sinaliza ambiguidade e lista candidatos; não escolhe automaticamente uma filial.
-- “Não encontrado” significa ausente entre os resultados da primeira página retornada. A interface informa o total analisado e permite conferir a lista. Não implica ausência em todo o Google Maps.
-- Cada ponto tem resultado próprio. Erros de autenticação, créditos, limite, conexão, tempo limite ou resposta inválida são apresentados como erros, nunca como ausência no ranking.
-- Campos e edição dos pontos ficam bloqueados durante a pesquisa. Alterar termo, estabelecimento, chave ou pontos limpa os resultados antigos; mudar apenas a cidade preserva a seleção e os resultados.
-- Cinco chamadas paralelas, timeout de 22 segundos por chamada e duração máxima de rota de 30 segundos. Repetir uma pesquisa consulta novamente todos os pontos e pode consumir mais créditos.
-
-## Serviços externos
-
-- Tiles: https://tile.openstreetmap.org, com atribuição e cache padrão do navegador. Política: https://operations.osmfoundation.org/policies/tiles/.
-- Cidades: https://geocoding-api.open-meteo.com/v1/search, dados GeoNames. Buscas só acontecem por ação explícita, com cache de 24 horas no servidor. Acesso gratuito para uso pessoal não comercial; reavaliar o plano/provedor caso o uso se torne comercial. Documentação: https://open-meteo.com/en/docs/geocoding-api.
-
-O funcionamento desses serviços depende de conexão e disponibilidade externas; erros são mostrados na interface. A Serper não participa da geocodificação.
-
-## Vercel
-
-Usar preset **Next.js**, raiz do repositório, Node.js 24.x e comandos padrão (`npm run build`). Remover eventuais overrides de diretório de saída de uma configuração anterior de site estático. Nenhuma variável de ambiente é necessária nesta etapa, incluindo chave Serper. O domínio deve ser associado nas configurações do projeto Vercel.
-
-## Validação
-
-Os testes automatizados cobrem validação de entrada, cinco chamadas geográficas, posição fornecida, nomes normalizados, ausência, ambiguidade, falhas parciais, autenticação, créditos, limite de uso e timeout. Nenhuma chave real é necessária para executá-los. Para homologação real, preencher uma chave válida na interface e pesquisar; essa ação consome os créditos correspondentes na Serper.
+Fluxo de trabalho: validar as alterações e fazer commit e push automaticamente para `origin`. Não iniciar servidor local para apresentar mudanças; o usuário acompanha pela Vercel. A versão anterior foi preservada no histórico Git. `docs/search-comparison.md` é um registro histórico de testes da antiga versão de ranking.

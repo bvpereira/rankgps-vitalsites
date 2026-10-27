@@ -1,5 +1,5 @@
-import RankingWorkspace from "@/components/RankingWorkspace";
+import BusinessWorkspace from "@/components/BusinessWorkspace";
 
 export default function Home() {
-  return <RankingWorkspace />;
+  return <BusinessWorkspace />;
 }

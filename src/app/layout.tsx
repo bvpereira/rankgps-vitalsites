@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RankGPS · Vital Sites",
+  title: "RankGPS · Explorar empresas",
   description:
-    "Consulte o posicionamento local do seu negócio em cinco pontos no Google Maps.",
+    "Pesquise até 50 empresas no Google Maps e consulte categorias, sites, telefones, endereços e avaliações.",
   robots: { index: false, follow: false },
 };
 
