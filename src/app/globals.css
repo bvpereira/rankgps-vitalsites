@@ -1247,3 +1247,255 @@ summary {
     transition: none !important;
   }
 }
+
+/* Prospecção: evidências e análise básica, sem alterar a ordem da busca. */
+.opportunity-panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 22px;
+}
+.opportunity-heading,
+.audit-toolbar,
+.audit-heading,
+.audit-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.opportunity-heading h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.opportunity-heading p,
+.audit-toolbar p {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.opportunity-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0;
+}
+.opportunity-filters button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e3e8f2;
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-size: 11px;
+  background: #fafbfe;
+  color: #67758e;
+}
+.opportunity-filters button[aria-pressed="true"] {
+  background: #edf1ff;
+  border-color: #8fa2ee;
+  color: #3e59bd;
+}
+.opportunity-filters button span {
+  background: #eaf0fa;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 10px;
+}
+.filter-settings {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.filter-settings label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #67758e;
+}
+.filter-settings input {
+  width: 70px;
+  border: 1px solid #dbe2ef;
+  border-radius: 5px;
+  padding: 6px;
+  font: inherit;
+  color: var(--ink);
+}
+.filter-settings p {
+  flex: 1;
+  min-width: 200px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.audit-toolbar {
+  margin-top: 18px;
+  padding-top: 17px;
+  border-top: 1px solid var(--line);
+}
+.audit-toolbar strong {
+  font-size: 12px;
+  font-weight: 600;
+}
+.audit-toolbar .button {
+  flex-shrink: 0;
+}
+.audit-progress {
+  font-size: 11px;
+  color: var(--blue);
+  margin-top: 15px;
+}
+.filter-caption {
+  font-size: 10px;
+  line-height: 1.7;
+  color: #8d98ac;
+  margin-top: 15px;
+}
+.opportunity-summary {
+  padding: 18px 20px;
+  border-top: 1px solid var(--line);
+  background: #fdfdff;
+}
+.opportunity-summary h4,
+.audit-heading h4 {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0;
+  color: #506380;
+}
+.opportunity-summary ul {
+  padding: 0;
+  margin: 12px 0 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.opportunity-summary li {
+  font-size: 11px;
+}
+.opportunity-summary li strong {
+  font-size: 11px;
+  font-weight: 500;
+  color: #667691;
+}
+.opportunity-summary li p {
+  font-size: 10px;
+  line-height: 1.7;
+  margin-top: 4px;
+  color: #8a96aa;
+}
+.opportunity-badge {
+  display: inline-block;
+  font-size: 8px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+.opportunity-badge.check {
+  color: #9c7b3f;
+  background: #fbf3e1;
+}
+.opportunity-badge.observed {
+  color: #627db1;
+  background: #edf2fb;
+}
+.website-analysis {
+  padding: 18px 20px;
+  border-top: 1px solid var(--line);
+}
+.audit-heading .button {
+  font-size: 10px;
+  min-height: 32px;
+  padding: 0 10px;
+}
+.audit-status {
+  display: inline-block;
+  font-size: 10px;
+  padding: 4px 7px;
+  border-radius: 5px;
+  margin-top: 14px;
+}
+.audit-analyzed {
+  background: #eaf6f0;
+  color: #4b9078;
+}
+.audit-http_error {
+  background: #fff1ec;
+  color: #b16d50;
+}
+.audit-inconclusive {
+  background: #f2f4f8;
+  color: #8b96aa;
+}
+.audit-facts {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+.audit-facts dt {
+  color: #929fb4;
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+.audit-facts dd {
+  margin: 0;
+  color: #62728c;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.audit-facts a {
+  color: #6179c5;
+  text-decoration: none;
+}
+.audit-date {
+  font-size: 9px;
+  color: #95a1b5;
+  line-height: 1.7;
+  margin-top: 12px;
+}
+.filter-empty {
+  padding: 35px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  text-align: center;
+}
+.filter-empty h3 {
+  font-size: 14px;
+}
+.filter-empty p {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 10px 0 18px;
+}
+@media (max-width: 600px) {
+  .opportunity-panel {
+    padding: 16px;
+  }
+  .audit-toolbar {
+    align-items: start;
+    flex-direction: column;
+  }
+  .audit-toolbar .button {
+    width: 100%;
+  }
+  .opportunity-filters {
+    gap: 6px;
+  }
+  .opportunity-filters button {
+    font-size: 10px;
+    padding: 8px;
+  }
+  .opportunity-summary,
+  .website-analysis {
+    padding: 16px;
+  }
+  .audit-heading {
+    flex-wrap: wrap;
+  }
+  .audit-progress {
+    align-items: start;
+  }
+}

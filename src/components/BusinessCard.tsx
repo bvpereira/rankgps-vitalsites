@@ -27,12 +27,14 @@ export default function BusinessCard({
   apiKey,
   disabled,
   onUpdate,
+  children,
 }: {
   business: Business;
   index: number;
   apiKey: string;
   disabled: boolean;
   onUpdate: (business: Business, credits: number | null) => void;
+  children?: React.ReactNode;
 }) {
   const [updated, setUpdated] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -160,6 +162,7 @@ export default function BusinessCard({
           ) : null}
         </Field>
       </dl>
+      {children}
       <details className="business-details">
         <summary>
           Ver ficha completa <span aria-hidden="true">＋</span>

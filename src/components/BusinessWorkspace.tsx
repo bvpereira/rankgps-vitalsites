@@ -10,7 +10,7 @@ import {
   type BusinessPage,
   type SearchSnapshot,
 } from "@/types/business";
-import BusinessCard from "./BusinessCard";
+import ProspectingResults from "./ProspectingResults";
 
 export default function BusinessWorkspace() {
   const key = useApiKey();
@@ -422,18 +422,13 @@ export default function BusinessWorkspace() {
               </p>
             )}
             {businesses.length ? (
-              <div className="business-grid">
-                {businesses.map((business, index) => (
-                  <BusinessCard
-                    key={`${snapshot!.searchedAt}:${business.id}`}
-                    business={business}
-                    index={index}
-                    apiKey={key.apiKey}
-                    disabled={busy}
-                    onUpdate={updateBusiness}
-                  />
-                ))}
-              </div>
+              <ProspectingResults
+                key={snapshot!.searchedAt}
+                businesses={businesses}
+                apiKey={key.apiKey}
+                disabled={busy}
+                onUpdate={updateBusiness}
+              />
             ) : (
               <div className="empty-state">
                 <div className="empty-illustration" aria-hidden="true">
